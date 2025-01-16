@@ -1,0 +1,32 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin:auto;background:transparent;display:block;" width="261px" height="261px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+<circle cx="80" cy="50" r="5" fill="#04a9f5">
+  <animate attributeName="cx" values="80;68.704694055762" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+  <animate attributeName="cy" values="50;73.4549444740409" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+  <animate attributeName="fill" values="#04a9f5;#04a9f5" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+</circle><circle cx="68.704694055762" cy="73.4549444740409" r="5" fill="#04a9f5">
+  <animate attributeName="cx" values="68.704694055762;43.32437198131057" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+  <animate attributeName="cy" values="73.4549444740409;79.2478373654547" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+  <animate attributeName="fill" values="#04a9f5;#D0021B" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+</circle><circle cx="43.32437198131057" cy="79.2478373654547" r="5" fill="#04a9f5">
+  <animate attributeName="cx" values="43.32437198131057;22.97093396292743" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+  <animate attributeName="cy" values="79.2478373654547;63.01651217352675" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+  <animate attributeName="fill" values="#D0021B;#04a9f5" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+</circle><circle cx="22.97093396292743" cy="63.01651217352675" r="5" fill="#04a9f5">
+  <animate attributeName="cx" values="22.97093396292743;22.970933962927425" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+  <animate attributeName="cy" values="63.01651217352675;36.98348782647326" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+  <animate attributeName="fill" values="#04a9f5;#04a9f5" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+</circle><circle cx="22.970933962927425" cy="36.98348782647326" r="5" fill="#04a9f5">
+  <animate attributeName="cx" values="22.970933962927425;43.32437198131056" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+  <animate attributeName="cy" values="36.98348782647326;20.752162634545293" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+  <animate attributeName="fill" values="#04a9f5;#04a9f5" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+</circle><circle cx="43.32437198131056" cy="20.752162634545293" r="5" fill="#a52834">
+  <animate attributeName="cx" values="43.32437198131056;68.704694055762" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+  <animate attributeName="cy" values="20.752162634545293;26.545055525959103" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+  <animate attributeName="fill" values="#04a9f5;#04a9f5" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+</circle><circle cx="68.704694055762" cy="26.545055525959103" r="5" fill="#04a9f5">
+  <animate attributeName="cx" values="68.704694055762;80" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+  <animate attributeName="cy" values="26.545055525959103;49.99999999999999" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+  <animate attributeName="fill" values="#04a9f5;#04a9f5" keyTimes="0;1" dur="0.7407407407407407s" repeatCount="indefinite"></animate>
+</circle>
+</svg>

@@ -1,2 +1,5 @@
 # DaddiesRoad
-Lorem Ipsum
+
+# 1. Run
+  > npm install
+  
