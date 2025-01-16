@@ -7,10 +7,11 @@ const { authenticateJWT } = require("../middleware/authenticateJWT");
 // });
 
 router.get('/', function(req, res) {
-  res.json({
-    status: 200,
-    message: `Welcome to API`
-  });
+  // res.json({
+  //   status: 200,
+  //   message: `Welcome to API`
+  // });
+  res.send(`Welcome to API`)
 });
 
 router.get('/terms-conditions', function(req, res) {
