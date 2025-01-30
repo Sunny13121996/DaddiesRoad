@@ -16,22 +16,22 @@ const {
 
 Auth.login = async (req, res) => {
     try {
-      const { email, password } = req.body;
-      const user = await User.findOne({ email });
+      const { phone_no, password } = req.body;
+      const user = await User.findOne({ phone_no });
       if (!user) {
-        return responseHandler(res, NotAcceptable, `Invalid email and password!`);
+        return responseHandler(res, NotAcceptable, `Invalid phone number and password!`);
       }
       const verifyPwd = await passwordHandler.comparePwd(password, user.password);
       if (verifyPwd) {
-        const accessToken = jwt.sign({ email }, process.env.JWT_ACCESS_TOKEN, {
+        const accessToken = jwt.sign({ phone_no }, process.env.JWT_ACCESS_TOKEN, {
           expiresIn: "10m"
         });
-        const refreshToken = jwt.sign({ email }, process.env.JWT_REFRESH_TOKEN);
+        const refreshToken = jwt.sign({ phone_no }, process.env.JWT_REFRESH_TOKEN);
         user._doc.accessToken  = accessToken;
         user._doc.refreshToken = refreshToken;
         return responseHandler(res, OK, `Login Successfully!`, user);
       } else {
-        return responseHandler(res, NotAcceptable, `Invalid email and password!`);
+        return responseHandler(res, NotAcceptable, `Invalid phone number and password!`);
       }
     } catch (error) {
       return responseHandler(res, ServerError, error.message);
@@ -42,10 +42,9 @@ Auth.register = async (req, res) => {
     try {
         const payload = {
           name: req.body.name,
-          email: req.body.email,
-          password: req.body.password,
-          country_code: req.body.country_code,
           phone_no: req.body.phone_no,
+          vehical_no: req.body.vehical_no,
+          password: req.body.password,
           device_type: req.body.device_type,
           token: req.body.token,
         };

@@ -5,10 +5,9 @@ const userSchema = new mongoose.Schema(
     {
         _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
         name: { type: String, required: true },
-        email: { type: String, required: true, unique: true },
-        password: { type: String, required: true },
-        country_code: { type: String, required: true },
         phone_no: { type: String, required: true, unique: true },
+        vehical_no: { type: String, required: true, unique: true },
+        password: { type: String, required: true },
         device_type: { type: String, required: true },
         token: { type: String, required: true }
     },

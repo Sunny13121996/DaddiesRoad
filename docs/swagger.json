@@ -45,7 +45,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "email": {
+                "phone_no": {
                   "example": "any"
                 },
                 "password": {
@@ -75,16 +75,13 @@
                 "name": {
                   "example": "any"
                 },
-                "email": {
+                "phone_no": {
+                  "example": "any"
+                },
+                "vehical_no": {
                   "example": "any"
                 },
                 "password": {
-                  "example": "any"
-                },
-                "country_code": {
-                  "example": "any"
-                },
-                "phone_no": {
                   "example": "any"
                 },
                 "device_type": {
