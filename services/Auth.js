@@ -55,7 +55,7 @@ Auth.register = async (req, res) => {
           ]
         });
         if (user.length > 0) {
-          return responseHandler(res, NotAcceptable, `This email and phone are already taken!`);
+          return responseHandler(res, NotAcceptable, `This vehical no and phone no are already taken!`);
         } else {
           // Encrypt the password before saving;
           const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_TOKEN, { expiresIn: "10m" });

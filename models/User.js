@@ -9,7 +9,8 @@ const userSchema = new mongoose.Schema(
         vehical_no: { type: String, required: true, unique: true },
         password: { type: String, required: true },
         device_type: { type: String, required: true },
-        token: { type: String, required: true }
+        token: { type: String, required: true },
+        is_subscribed: { type: Boolean, required: true, default: false }
     },
     {
         timestamps: true, // Automatically adds createdAt and updatedAt fields
