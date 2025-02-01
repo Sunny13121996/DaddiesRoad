@@ -6,7 +6,8 @@ const Auth                = {};
 const jwtKey              = process.env.JWT_TOKEN;
 const jwtAccessKey        = process.env.JWT_ACCESS_TOKEN;
 const jwt                 = require("jsonwebtoken");
-const { verifyRefresh } = require("../middleware/authenticateJWT");
+const { verifyRefresh }   = require("../middleware/authenticateJWT");
+const { v4: uuidv4 }      = require('uuid');
 const {
     OK,
     ServerError,
@@ -50,26 +51,24 @@ Auth.register = async (req, res) => {
         };
         const user = await User.find({
           $or: [
-            { email: payload.email },
-            { phone_no: payload.phone_no }
+            { phone_no: payload.phone_no },
+            { vehical_no: payload.vehical_no }
           ]
         });
         if (user.length > 0) {
           return responseHandler(res, NotAcceptable, `This vehical no and phone no are already taken!`);
         } else {
-          // Encrypt the password before saving;
-          const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_TOKEN, { expiresIn: "10m" });
+          const accessToken  = jwt.sign(payload, process.env.JWT_ACCESS_TOKEN, { expiresIn: "10m" });
           const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_TOKEN);
-          payload.password = await passwordHandler.generatePwd(payload.password);
-          // Create and save the user
+          payload.password   = await passwordHandler.generatePwd(payload.password);
+          payload.uuid       = uuidv4();
           const user = new User(payload);
           await user.save();
           user._doc.accessToken  = accessToken;
           user._doc.refreshToken = refreshToken;
-          // Respond with success and include the user (if needed, include `_id` explicitly as `id`)
           responseHandler(res, 200, `Register Successfully!`, {
-            id: user._id, // Add `_id` as `id` if needed
-            ...user._doc, // Spread the rest of the user fields
+            id: user._id,
+            ...user._doc,
           });
         }
     } catch (error) {
