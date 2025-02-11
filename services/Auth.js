@@ -66,7 +66,7 @@ Auth.register = async (req, res) => {
           await user.save();
           user._doc.accessToken  = accessToken;
           user._doc.refreshToken = refreshToken;
-          responseHandler(res, 200, `Register Successfully!`, {
+          responseHandler(res, OK, `Register Successfully!`, {
             id: user._id,
             ...user._doc,
           });
