@@ -2,28 +2,30 @@ require('dotenv').config();
 
 const { responseHandler, passwordHandler } = require("../helper/helper");
 const Razorpay            = require("razorpay");
-const Payments            = {};
-const razorKeyId          = process.env.RAZORPAY_KEY_ID;
-const razorKeySecret      = process.env.RAZORPAY_KEY_SECRET;
+const crypto              = require("crypto");
+const Payment             = {};
 const {Payments}          = require("../models/Payments");
 const {User}              = require("../models/User");
+const {Wallet}            = require("../models/Wallet");
 const {
     OK,
     ServerError,
+    NotFound,
     NotAcceptable,
     Unauthorized
 }                         = require("../config/statusCodes");
 
 const razorpay                           = new Razorpay({ key_id: process.env.RAZORPAY_KEY_ID, key_secret: process.env.RAZORPAY_KEY_SECRET });
-  
-Payments.createOrder                     = async (req, res) => {
+
+Payment.createOrder                     = async (req, res) => {
     try {
         const { amount, uuid }           = req.body;
+        amount                           = amount * 100;
         const currency                   = "INR";
         const user                       = await User.findOne({ uuid: uuid });
         const date                       = Date.now();
         const order                      = await razorpay.orders.create({
-            amount: amount * 100,
+            amount: amount,
             currency: currency,
             receipt: `order_${user.name}_${user.phone_no}_rcptid_${date}`,
             notes: {
@@ -41,11 +43,6 @@ Payments.createOrder                     = async (req, res) => {
             };
             const payement = new Payments(orderReceipt);
             await payement.save();
-            await User.findOneAndUpdate(
-                { uuid: uuid },
-                { is_subscribed: true },
-                { new: true, useFindAndModify: false }
-            );
         }
         return responseHandler(res, OK, `Payment Successfully!`, order);
     } catch (error) {
@@ -53,4 +50,33 @@ Payments.createOrder                     = async (req, res) => {
     }
 };
 
-module.exports = Payments
+Payment.verifyPayment           = async (req, res) => {
+    try {
+        const { 
+            razorpay_order_id, 
+            razorpay_payment_id, 
+            razorpay_signature, 
+            uuid,
+            amount 
+        }                        = req.body;
+        amount                   = amount / 100;
+        const hmac               = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
+        hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
+        const generatedSignature = hmac.digest("hex");
+        if (generatedSignature === razorpay_signature) {
+            await Wallet.findOneAndUpdate({ uuid: uuid }, { $inc: { balance: amount } }, { upsert: true });
+            await User.findOneAndUpdate(
+                { uuid: uuid },
+                { is_subscribed: true },
+                { new: true, useFindAndModify: false }
+            );
+            return responseHandler(res, OK, `Payment Verified Successfully!`, { payment_id: razorpay_payment_id });
+        } else {
+            return responseHandler(res, NotFound, `Invalid signature`);
+        }
+    } catch (error) {
+        return responseHandler(res, ServerError, error.message);
+    }  
+};
+
+module.exports = Payment;

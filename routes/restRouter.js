@@ -1,6 +1,7 @@
 const express  = require('express');
 const router   = express.Router();
 const Auth     = require("../services/Auth");
+const Payments = require("../services/Payments");
 const Notifications = require("../services/Notifications");
 const { isAuthenticated } = require("../middleware/authenticateJWT");
 const path    = require('path');
@@ -20,7 +21,13 @@ const cpUpload = upload.fields([{ name: 'image', maxCount: 1 }]);
 router.post('/login', Auth.login);
 router.post('/register', Auth.register);
 router.post('/refreshToken', Auth.refreshToken);
-router.post('/update-config', isAuthenticated, Auth.updateConfig);
+router.post('/updateConfig', isAuthenticated, Auth.updateConfig);
+
+//Payments
+router.post('/createOrder', isAuthenticated, Payments.createOrder);
+router.post('/verifyPayment', isAuthenticated, Payments.verifyPayment);
+
+//Notifications
 router.post('/notifications', isAuthenticated, Notifications.notifications);
 
 module.exports = router;

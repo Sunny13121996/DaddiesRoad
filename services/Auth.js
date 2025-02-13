@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const { responseHandler, passwordHandler } = require("../helper/helper");
 const {User}              = require("../models/User");
+const {Wallet}            = require("../models/Wallet");
 const Auth                = {};
 const jwtKey              = process.env.JWT_TOKEN;
 const jwtAccessKey        = process.env.JWT_ACCESS_TOKEN;
@@ -12,7 +13,8 @@ const {
     OK,
     ServerError,
     NotAcceptable,
-    Unauthorized
+    Unauthorized,
+    NotFound
 }                         = require("../config/statusCodes");
 
 Auth.login = async (req, res) => {
@@ -72,7 +74,7 @@ Auth.register = async (req, res) => {
           });
         }
     } catch (error) {
-      responseHandler(res, 500, error.message);
+      responseHandler(res, ServerError, error.message);
     }
 };
 
@@ -93,18 +95,19 @@ Auth.refreshToken      = (req, res) => {
 
 Auth.updateConfig = async (req, res) => {
     try {
-      const { device_type, device_token, driver_id } = req.body;
-      const updateResult = await Driver.findOneAndUpdate(
-        { uuid: driver_id },
-        { device_type, device_token },
+      const { device_type, device_token, uuid } = req.body;
+      const updateResult = await User.findOneAndUpdate(
+        { uuid: uuid },
+        { device_type, token: device_token },
         { new: true, useFindAndModify: false }
       );
       if (!updateResult) {
-        return responseHandler(res, 404, 'Driver not found!');
+        return responseHandler(res, NotFound, 'User not found!');
       }
-      responseHandler(res, 200, 'Configuration updated successfully!', updateResult);
+      const wallet = await Wallet.findOne({ uuid });
+      responseHandler(res, OK, 'Configuration updated successfully!', { amount: (!wallet)? 0: wallet });
     } catch (error) {
-      responseHandler(res, 500, error.message);
+      responseHandler(res, ServerError, error.message);
     }
 };
 
