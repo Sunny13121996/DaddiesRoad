@@ -21,13 +21,13 @@ Payment.createOrder                     = async (req, res) => {
     try {
         const { amount, uuid }           = req.body;
         amount                           = amount * 100;
-        const currency                   = "INR";
         const user                       = await User.findOne({ uuid: uuid });
         const date                       = Date.now();
         const order                      = await razorpay.orders.create({
             amount: amount,
             currency: currency,
             receipt: `order_${user.name}_${user.phone_no}_rcptid_${date}`,
+            payment_capture: 1,
             notes: {
                 user: `${user.vehical_no}-${user.uuid}`
             }
@@ -38,7 +38,7 @@ Payment.createOrder                     = async (req, res) => {
                 amount: order.amount,
                 amount_paid: order.amount_paid,
                 amount_due: order.amount_due,
-                currency: currency,
+                currency: order.currency,
                 uuid: uuid
             };
             const payement = new Payments(orderReceipt);
