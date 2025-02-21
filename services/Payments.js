@@ -17,9 +17,9 @@ const {
 
 const razorpay                           = new Razorpay({ key_id: process.env.RAZORPAY_KEY_ID, key_secret: process.env.RAZORPAY_KEY_SECRET });
 
-Payment.createOrder                     = async (req, res) => {
+Payment.createOrder                      = async (req, res) => {
     try {
-        const { amount, uuid }           = req.body;
+        let { amount, uuid }             = req.body; 
         amount                           = amount * 100;
         const user                       = await User.findOne({ uuid: uuid });
         const date                       = Date.now();
@@ -52,13 +52,13 @@ Payment.createOrder                     = async (req, res) => {
 
 Payment.verifyPayment           = async (req, res) => {
     try {
-        const { 
+        let { 
             razorpay_order_id, 
             razorpay_payment_id, 
             razorpay_signature, 
             uuid,
             amount 
-        }                        = req.body;
+        }                        = req.body; 
         amount                   = amount / 100;
         const hmac               = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
         hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
