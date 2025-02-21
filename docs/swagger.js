@@ -20,9 +20,11 @@ const swaggerDocument = {
       email: "ss691601@gmail.com",
     },
   },
-  host: "https://daddiesroad.onrender.com/api",
+  host: "daddiesroad.onrender.com/api",
+  // host: "localhost:7001/api",
   basePath: "/",
-  schemes: ["http"],
+  schemes: ["https"],
+  // schemes: ["http"],
   consumes: ["application/json"],
   produces: ["application/json"],
   tags: [

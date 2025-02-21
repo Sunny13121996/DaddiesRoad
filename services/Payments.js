@@ -26,7 +26,7 @@ Payment.createOrder                      = async (req, res) => {
         const order                      = await razorpay.orders.create({
             amount: amount,
             currency: currency,
-            receipt: `order_${user.name}_${user.phone_no}_rcptid_${date}`,
+            receipt: `order_${user.phone_no}_rcptid_${date}`,
             payment_capture: 1,
             notes: {
                 user: `${user.vehical_no}-${user.uuid}`
@@ -46,6 +46,8 @@ Payment.createOrder                      = async (req, res) => {
         }
         return responseHandler(res, OK, `Payment Successfully!`, order);
     } catch (error) {
+        
+        console.log(`error===>>`,error)
         return responseHandler(res, ServerError, error.message);
     }
 };

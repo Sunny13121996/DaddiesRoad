@@ -8,7 +8,7 @@ const paymentsSchema = new mongoose.Schema(
         order_id: { type: String, required: true, unique: true },
         amount: { type: String, required: true },
         amount_paid: { type: String, required: true },
-        amount_due: { type: String, required: true, unique: true },
+        amount_due: { type: String, required: true },
         currency: { type: String, required: true },
     },
     {

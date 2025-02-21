@@ -9,7 +9,7 @@
       "email": "ss691601@gmail.com"
     }
   },
-  "host": "https://daddiesroad.onrender.com/api",
+  "host": "daddiesroad.onrender.com/api",
   "basePath": "/",
   "tags": [
     {
@@ -18,7 +18,7 @@
     }
   ],
   "schemes": [
-    "http"
+    "https"
   ],
   "securityDefinitions": {
     "BearerAuth": {
