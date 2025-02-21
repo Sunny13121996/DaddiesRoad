@@ -19,7 +19,7 @@ const razorpay                           = new Razorpay({ key_id: process.env.RA
 
 Payment.createOrder                      = async (req, res) => {
     try {
-        let { amount, uuid }             = req.body; 
+        let { amount, uuid, currency }   = req.body; 
         amount                           = amount * 100;
         const user                       = await User.findOne({ uuid: uuid });
         const date                       = Date.now();
