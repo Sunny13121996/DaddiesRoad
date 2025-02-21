@@ -9,7 +9,7 @@
       "email": "ss691601@gmail.com"
     }
   },
-  "host": "localhost:7001/api",
+  "host": "https://daddiesroad.onrender.com/api",
   "basePath": "/",
   "tags": [
     {
@@ -172,6 +172,9 @@
                   "example": "any"
                 },
                 "uuid": {
+                  "example": "any"
+                },
+                "currency": {
                   "example": "any"
                 }
               }
