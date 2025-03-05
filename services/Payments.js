@@ -46,8 +46,6 @@ Payment.createOrder                      = async (req, res) => {
         }
         return responseHandler(res, OK, `Payment Successfully!`, order);
     } catch (error) {
-        
-        console.log(`error===>>`,error)
         return responseHandler(res, ServerError, error.message);
     }
 };

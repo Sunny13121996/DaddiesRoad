@@ -3,6 +3,7 @@ const router   = express.Router();
 const Auth     = require("../services/Auth");
 const Payments = require("../services/Payments");
 const Notifications = require("../services/Notifications");
+const Twillio = require("../services/Twillio");
 const { isAuthenticated } = require("../middleware/authenticateJWT");
 const path    = require('path');
 const multer  = require('multer');
@@ -29,5 +30,9 @@ router.post('/verifyPayment', isAuthenticated, Payments.verifyPayment);
 
 //Notifications
 router.post('/notifications', isAuthenticated, Notifications.notifications);
+
+//Twillio Calls
+router.post('/inboundCall', isAuthenticated, Twillio.inBoundCall);
+router.post('/callStatus', isAuthenticated, Twillio.callStatus);
 
 module.exports = router;
