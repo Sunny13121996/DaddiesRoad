@@ -50,7 +50,7 @@ Twillio.inBoundCall = async (req, res) => {
         const call = await twilioClient.calls.create({
             to: toPhone,
             from: twilioPhone,
-            statusCallback: `https://yourserver.com/call-status?uuid=${uuid}`,
+            statusCallback: `https://daddiesroad.onrender.com/api/callStatus?uuid=${uuid}`,
             statusCallbackEvent: ["completed"]
         });
 
