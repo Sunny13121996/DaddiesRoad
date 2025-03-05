@@ -13,11 +13,12 @@ const {
     Unauthorized
 }                         = require("../config/statusCodes");
 
-Twillio.inBoundCall       = async (req, res) => {
+Twillio.makeCall          = async (req, res) => {
     try {
+        const params      = req.query;
         const twiml       = new twilio.twiml.VoiceResponse();
         twiml.say("Please wait while we connect your call.");
-        twiml.dial("+919876543210");
+        twiml.dial(params.phone);
         res.type("text/xml").send(twiml.toString());
     } catch (error) {
         return responseHandler(res, ServerError, error.message);
@@ -48,9 +49,11 @@ Twillio.inBoundCall = async (req, res) => {
 
         // Start the call
         const call = await twilioClient.calls.create({
+            url: `https://daddiesroad.onrender.com/api/makeCall?phone=${toPhone}`,
             to: toPhone,
             from: twilioPhone,
             statusCallback: `https://daddiesroad.onrender.com/api/callStatus?uuid=${uuid}`,
+            // statusCallback: `http://localhost:7001/api/callStatus?uuid=${uuid}`,
             statusCallbackEvent: ["completed"]
         });
 
@@ -61,6 +64,7 @@ Twillio.inBoundCall = async (req, res) => {
         });
 
     } catch (error) {
+        console.log(`error==`,error)
         return responseHandler(res, ServerError, error.message);
     }
 };
