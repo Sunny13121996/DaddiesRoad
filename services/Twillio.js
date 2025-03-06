@@ -17,6 +17,10 @@ const accountSid          = process.env.TWILIO_ACCOUNT_SID;
 const authToken           = process.env.TWILIO_AUTH_TOKEN;
 const twilioClient        = twilio(accountSid, authToken);
 
+Twillio.maskPhoneNumber   = (phone) => {
+    return phone.replace(/(\d{2})\d{6}(\d{2})/, '$1XXXXXX$2');
+};
+
 Twillio.makeCall          = async (req, res) => {
     try {
         const params      = req.query;
@@ -31,9 +35,8 @@ Twillio.makeCall          = async (req, res) => {
 
 Twillio.inBoundCall = async (req, res) => {
     try {
-        let { vehical_no, uuid, toPhone } = req.body;
+        let { vehical_no, uuid } = req.body;
         const twilioPhone  = process.env.TWILIO_PHONE_NUMBER; // Twilio Number
-        const COST_PER_MIN = parseInt(process.env.COST_PER_MIN); // Cost per minute
 
         // Find user and wallet
         const user         = await User.findOne({ uuid, vehical_no });
@@ -41,12 +44,16 @@ Twillio.inBoundCall = async (req, res) => {
             return responseHandler(res, NotFound, "This vehicle is not associated with us!");
         }
 
-        let wallet = await Wallet.findOne({ uuid });
+        let wallet          = await Wallet.findOne({ uuid });
         if (!wallet || Math.floor(wallet.balance) <= 0) {
-            const twiml = new twilio.twiml.VoiceResponse();
-            twiml.say("You do not have enough balance to make this call.");
-            return res.type("text/xml").send(twiml.toString());
+            // const twiml = new twilio.twiml.VoiceResponse();
+            // twiml.say("You do not have enough balance to make this call.");
+            // return res.type("text/xml").send(twiml.toString());
+            responseHandler(res, NotAcceptable, `You do not have enough balance to make this call.`);
         }
+
+        const toPhone      = "+91"+user.phone_no;
+        const userName     = user.name;
 
         // Start the call
         const call = await twilioClient.calls.create({
@@ -58,7 +65,9 @@ Twillio.inBoundCall = async (req, res) => {
         });
 
         responseHandler(res, OK, 'Call initiated successfully.!', { 
-            call: call.sid 
+            call: call.sid,
+            toPhone: Twillio.maskPhoneNumber(toPhone),
+            userName: userName
         });
     } catch (error) {
         return responseHandler(res, ServerError, error.message);
@@ -99,7 +108,7 @@ Twillio.deductedFromWallet  = async (req, res) => {
         if (wallet.balance >= totalChargeINR) {
             wallet.balance -= totalChargeINR;
             await wallet.save();
-            responseHandler(res, OK, `Call ended. Charged ${totalChargeINR} for ${minutes} minutes.`, 
+            responseHandler(res, OK, `Call ended. Charged ${Math.floor(totalChargeINR)}rs for ${minutes} minutes.`, 
                 { remaining_balance: Math.floor(wallet.balance) }
             );
         } else {
