@@ -13,6 +13,10 @@ const {
     Unauthorized
 }                         = require("../config/statusCodes");
 
+const accountSid          = process.env.TWILIO_ACCOUNT_SID;
+const authToken           = process.env.TWILIO_AUTH_TOKEN;
+const twilioClient        = twilio(accountSid, authToken);
+
 Twillio.makeCall          = async (req, res) => {
     try {
         const params      = req.query;
@@ -28,9 +32,6 @@ Twillio.makeCall          = async (req, res) => {
 Twillio.inBoundCall = async (req, res) => {
     try {
         let { vehical_no, uuid, toPhone } = req.body;
-        const accountSid   = process.env.TWILIO_ACCOUNT_SID;
-        const authToken    = process.env.TWILIO_AUTH_TOKEN;
-        const twilioClient = twilio(accountSid, authToken);
         const twilioPhone  = process.env.TWILIO_PHONE_NUMBER; // Twilio Number
         const COST_PER_MIN = parseInt(process.env.COST_PER_MIN); // Cost per minute
 
@@ -41,7 +42,7 @@ Twillio.inBoundCall = async (req, res) => {
         }
 
         let wallet = await Wallet.findOne({ uuid });
-        if (!wallet || wallet.balance < COST_PER_MIN) {
+        if (!wallet || Math.floor(wallet.balance) <= 0) {
             const twiml = new twilio.twiml.VoiceResponse();
             twiml.say("You do not have enough balance to make this call.");
             return res.type("text/xml").send(twiml.toString());
@@ -52,49 +53,59 @@ Twillio.inBoundCall = async (req, res) => {
             url: `https://daddiesroad.onrender.com/api/makeCall?phone=${toPhone}`,
             to: toPhone,
             from: twilioPhone,
-            statusCallback: `https://daddiesroad.onrender.com/api/callStatus?uuid=${uuid}`,
-            // statusCallback: `http://localhost:7001/api/callStatus?uuid=${uuid}`,
+            // statusCallback: `https://daddiesroad.onrender.com/api/callStatus?uuid=${uuid}`,
             statusCallbackEvent: ["completed"]
         });
 
-        res.json({
-            success: true,
-            message: "Call initiated successfully.",
-            callSid: call.sid
+        responseHandler(res, OK, 'Call initiated successfully.!', { 
+            call: call.sid 
         });
-
     } catch (error) {
-        console.log(`error==`,error)
         return responseHandler(res, ServerError, error.message);
     }
 };
 
-Twillio.callStatus = async (req, res) => {
+Twillio.callStatus       = async (req, res) => {
     try {
-        const { uuid, CallDuration } = req.query;
-        const COST_PER_MIN           = parseInt(process.env.COST_PER_MIN);
-        let wallet                   = await Wallet.findOne({ uuid });
+        let { call_sid } = req.query;
+        const { sid, status, startTime, endTime, duration, price, priceUnit } = await twilioClient.calls(call_sid).fetch();
+        responseHandler(res, OK, 'Call initiated successfully.!', 
+            { sid, status, startTime, endTime, duration, price, priceUnit }
+        );
+    } catch (error) {
+        return responseHandler(res, ServerError, error.message);
+    }
+};
+
+Twillio.deductedFromWallet  = async (req, res) => {
+    try {
+        let { 
+            uuid, 
+            startTime, 
+            endTime, 
+            duration, 
+            price, 
+            usd 
+        }                   = req.body;
+        let wallet          = await Wallet.findOne({ uuid });
         if (!wallet) {
             return responseHandler(res, NotFound, "Wallet not found!");
         }
-        const duration               = parseInt(CallDuration) || 0;
-        const minutes                = Math.ceil(duration / 60);
-        const totalCharge            = minutes * COST_PER_MIN;
-        if (wallet.balance >= totalCharge) {
-            wallet.balance -= totalCharge;
+        startTime           = new Date(startTime);
+        endTime             = new Date(endTime);
+        duration            = Math.floor((endTime - startTime) / 1000);
+        const minutes       = Math.ceil((duration % 3600) / 60);
+        const totalChargeINR  = Math.abs(price * usd);
+        if (wallet.balance >= totalChargeINR) {
+            wallet.balance -= totalChargeINR;
             await wallet.save();
-            return res.json({
-                success: true,
-                message: `Call ended. Charged ${totalCharge} for ${minutes} minutes.`,
-                remaining_balance: wallet.balance
-            });
+            responseHandler(res, OK, `Call ended. Charged ${totalChargeINR} for ${minutes} minutes.`, 
+                { remaining_balance: Math.floor(wallet.balance) }
+            );
         } else {
-            return res.json({
-                success: false,
-                message: "Not enough balance for the full duration.",
-                charged: wallet.balance,
-                remaining_balance: 0
-            });
+            responseHandler(res, NotAcceptable, `Not enough balance for the full duration.`, 
+                { remaining_balance: Math.floor(wallet.balance) }
+            );
         }
     } catch (error) {
         return responseHandler(res, ServerError, error.message);

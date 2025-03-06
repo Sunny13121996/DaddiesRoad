@@ -104,8 +104,12 @@ Auth.updateConfig = async (req, res) => {
       if (!updateResult) {
         return responseHandler(res, NotFound, 'User not found!');
       }
-      const wallet = await Wallet.findOne({ uuid });
-      responseHandler(res, OK, 'Configuration updated successfully!', { amount: (!wallet)? 0: wallet });
+      let wallet = await Wallet.findOne({ uuid });
+      wallet     = (wallet)? wallet : 0;  
+      wallet.balance = (wallet.balance)? Math.floor(wallet.balance) : 0; 
+      responseHandler(res, OK, 'Configuration updated successfully!', { 
+        amount: wallet 
+      });
     } catch (error) {
       responseHandler(res, ServerError, error.message);
     }
