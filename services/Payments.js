@@ -24,7 +24,7 @@ Payment.createOrder                      = async (req, res) => {
         const user                       = await User.findOne({ uuid: uuid });
         const date                       = Date.now();
         let receipt                      = `order_${user.phone_no}_rcptid_${date}`;
-        if (payment_from == 'subscription') {
+        if (payment_from && payment_from == 'subscription') {
             receipt                      = `order_${user.phone_no}_lyftime_rcptid_${date}`;
         }
         const order                      = await razorpay.orders.create({
@@ -70,7 +70,7 @@ Payment.verifyPayment           = async (req, res) => {
         hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
         const generatedSignature = hmac.digest("hex");
         if (generatedSignature === razorpay_signature) {
-            if (payment_from == 'subscription') {
+            if (payment_from && payment_from == 'subscription') {
                 await User.findOneAndUpdate(
                     { uuid: uuid },
                     { is_subscribed: true },
