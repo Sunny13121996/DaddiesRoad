@@ -3,6 +3,7 @@ require('dotenv').config();
 const { responseHandler, passwordHandler } = require("../helper/helper");
 const {User}              = require("../models/User");
 const {Wallet}            = require("../models/Wallet");
+const {Payments}          = require("../models/Payments");
 const Auth                = {};
 const jwtKey              = process.env.JWT_TOKEN;
 const jwtAccessKey        = process.env.JWT_ACCESS_TOKEN;
@@ -134,6 +135,46 @@ Auth.updateProfile = async (req, res) => {
   } catch (error) {
     responseHandler(res, ServerError, error.message);
   }
+};
+
+Auth.deleteAccount = async (req, res) => {
+  try {
+    const { uuid } = req.body;
+    const userDeletion = await User.findOneAndDelete({ uuid });
+    if (!userDeletion) {
+      return responseHandler(res, NotFound, 'User not found!');
+    }
+    await Wallet.deleteOne({ uuid });
+    await Payments.deleteMany({ uuid });
+    responseHandler(res, OK, 'Account and related records deleted successfully!');
+  } catch (error) {
+    responseHandler(res, ServerError, error.message);
+  }
+};
+
+Auth.qrFound          = async (req, res) => {
+  const uuid          = req.params.uuid;
+  const appScheme     = `myapp://scan/${uuid}`; // Deep link to open app
+  const playStoreLink = "https://play.google.com/store/apps/details?id=com.hifamily.hidaddy";
+  const html = `
+    <html>
+    <head>
+      <title>Redirecting...</title>
+      <script>
+        var appScheme = "${appScheme}";
+        var playStoreLink = "${playStoreLink}";
+        setTimeout(function() {
+          window.location.href = playStoreLink; // Redirect to Play Store if the app isn't installed
+        }, 3000);
+        window.location.href = appScheme; // Try to open the app
+      </script>
+    </head>
+    <body>
+      <p>Redirecting to the app...</p>
+    </body>
+    </html>
+  `;
+  res.send(html);
 };
 
 module.exports = Auth

@@ -158,6 +158,81 @@
         }
       }
     },
+    "/updateProfile": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "phone_no": {
+                  "example": "any"
+                },
+                "vehical_no": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/deleteAccount": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "uuid": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/qrFound/{uuid}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/createOrder": {
       "post": {
         "description": "",
@@ -175,6 +250,9 @@
                   "example": "any"
                 },
                 "currency": {
+                  "example": "any"
+                },
+                "payment_from": {
                   "example": "any"
                 }
               }
@@ -211,6 +289,9 @@
                   "example": "any"
                 },
                 "amount": {
+                  "example": "any"
+                },
+                "payment_from": {
                   "example": "any"
                 }
               }
@@ -285,9 +366,6 @@
                   "example": "any"
                 },
                 "uuid": {
-                  "example": "any"
-                },
-                "toPhone": {
                   "example": "any"
                 }
               }
