@@ -10,6 +10,7 @@ const paymentsSchema = new mongoose.Schema(
         amount_paid: { type: String, required: true },
         amount_due: { type: String, required: true },
         currency: { type: String, required: true },
+        payment_from: { type: String, required: true },
     },
     {
         timestamps: true, // Automatically adds createdAt and updatedAt fields
