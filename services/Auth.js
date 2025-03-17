@@ -115,4 +115,25 @@ Auth.updateConfig = async (req, res) => {
     }
 };
 
+Auth.updateProfile = async (req, res) => {
+  try {
+    const { uuid, name, phone_no, vehical_no } = req.body;
+    const updateResult = await User.findOneAndUpdate(
+      { uuid },
+      { name, phone_no, vehical_no },
+      { new: true, useFindAndModify: false, runValidators: true }
+    );
+    if (!updateResult) {
+      return responseHandler(res, NotFound, 'User not found!');
+    }
+    responseHandler(res, OK, 'Profile updated successfully!', {
+      user: name,
+      phone_no: phone_no,
+      vehical_no: vehical_no
+    });
+  } catch (error) {
+    responseHandler(res, ServerError, error.message);
+  }
+};
+
 module.exports = Auth

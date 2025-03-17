@@ -23,6 +23,7 @@ router.post('/login', Auth.login);
 router.post('/register', Auth.register);
 router.post('/refreshToken', Auth.refreshToken);
 router.post('/updateConfig', isAuthenticated, Auth.updateConfig);
+router.post('/updateProfile',  isAuthenticated, Auth.updateProfile);
 
 //Payments
 router.post('/createOrder', isAuthenticated, Payments.createOrder);
