@@ -25,7 +25,7 @@ Payment.createOrder                      = async (req, res) => {
         const date                       = Date.now();
         let receipt                      = `order_${user.phone_no}_rcptid_${date}`;
         if (payment_from && payment_from == 'subscription') {
-            receipt                      = `order_${user.phone_no}_lyftime_rcptid_${date}`;
+            receipt                      = `odrNo_${user.phone_no}_lyftime_${uuid}`;
         }
         const order                      = await razorpay.orders.create({
             amount: amount,
