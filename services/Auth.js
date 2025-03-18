@@ -61,7 +61,7 @@ Auth.register = async (req, res) => {
         if (user.length > 0) {
           return responseHandler(res, NotAcceptable, `This vehical no and phone no are already taken!`);
         } else {
-          const accessToken  = jwt.sign(payload, process.env.JWT_ACCESS_TOKEN, { expiresIn: "10m" });
+          const accessToken  = jwt.sign(payload, process.env.JWT_ACCESS_TOKEN, { expiresIn: "1h" });
           const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_TOKEN);
           payload.password   = await passwordHandler.generatePwd(payload.password);
           payload.uuid       = uuidv4();
@@ -152,7 +152,7 @@ Auth.deleteAccount = async (req, res) => {
   }
 };
 
-Auth.qrFound          = async (req, res) => {
+Auth.qr               = async (req, res) => {
   const uuid          = req.params.uuid;
   const appScheme     = `myapp://scan/${uuid}`; // Deep link to open app
   const playStoreLink = "https://play.google.com/store/apps/details?id=com.hifamily.hidaddy";

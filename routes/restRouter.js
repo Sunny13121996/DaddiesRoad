@@ -25,7 +25,7 @@ router.post('/refreshToken', Auth.refreshToken);
 router.post('/updateConfig', isAuthenticated, Auth.updateConfig);
 router.post('/updateProfile',  isAuthenticated, Auth.updateProfile);
 router.post('/deleteAccount',  isAuthenticated, Auth.deleteAccount);
-router.get('/qrFound/:uuid', Auth.qrFound);
+router.get('/qr/:uuid', Auth.qr);
 
 //Payments
 router.post('/createOrder', isAuthenticated, Payments.createOrder);

@@ -25,7 +25,7 @@ Payment.createOrder                      = async (req, res) => {
         const date                       = Date.now();
         let receipt                      = `order_${user.phone_no}_rcptid_${date}`;
         if (payment_from && payment_from == 'subscription') {
-            receipt                      = `odrNo_${user.phone_no}_lyftime_${uuid}`;
+            receipt                      = `order_${user.phone_no}_lyftime`;
         }
         const order                      = await razorpay.orders.create({
             amount: amount,
@@ -51,6 +51,7 @@ Payment.createOrder                      = async (req, res) => {
         }
         return responseHandler(res, OK, `Payment Successfully!`, order);
     } catch (error) {
+        console.log(error,' -=error')
         return responseHandler(res, ServerError, error.message);
     }
 };
