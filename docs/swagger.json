@@ -215,7 +215,7 @@
         }
       }
     },
-    "/qrFound/{uuid}": {
+    "/qr/{uuid}": {
       "get": {
         "description": "",
         "parameters": [
@@ -385,6 +385,28 @@
         "parameters": [
           {
             "name": "call_sid",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/callEnd": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "call_sid",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "call_status",
             "in": "query",
             "type": "string"
           }

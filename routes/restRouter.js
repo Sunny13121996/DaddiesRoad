@@ -38,6 +38,7 @@ router.post('/notifications', isAuthenticated, Notifications.notifications);
 router.get('/makeCall', isAuthenticated, Twillio.makeCall);
 router.post('/inboundCall', isAuthenticated,  Twillio.inBoundCall);
 router.get('/callStatus',  isAuthenticated, Twillio.callStatus);
+router.get('/callEnd',  isAuthenticated, Twillio.callEnd);
 router.post('/deductedFromWallet',  isAuthenticated, Twillio.deductedFromWallet);
 
 module.exports = router;
