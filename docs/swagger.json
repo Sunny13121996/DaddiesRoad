@@ -396,28 +396,6 @@
         }
       }
     },
-    "/callEnd": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "call_sid",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "call_status",
-            "in": "query",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/deductedFromWallet": {
       "post": {
         "description": "",
@@ -444,6 +422,12 @@
                   "example": "any"
                 },
                 "usd": {
+                  "example": "any"
+                },
+                "call_sid": {
+                  "example": "any"
+                },
+                "call_status": {
                   "example": "any"
                 }
               }

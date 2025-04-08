@@ -86,22 +86,6 @@ Twillio.callStatus       = async (req, res) => {
     }
 };
 
-Twillio.callEnd          = async (req, res) => {
-    try {
-        let { call_sid, call_status } = req.query;
-        if (call_status == "in-progress") {
-            try {
-                await twilioClient.calls(CallSid).update({ status: 'completed' });
-                responseHandler(res, OK, `Call ${call_sid} end successfully.`);
-            } catch (err) {
-                responseHandler(res, Unauthorized, err.message);
-            }
-        }
-    } catch (error) {
-        return responseHandler(res, ServerError, error.message);
-    }
-};
-
 Twillio.deductedFromWallet  = async (req, res) => {
     try {
         let { 
@@ -110,11 +94,16 @@ Twillio.deductedFromWallet  = async (req, res) => {
             endTime, 
             duration, 
             price, 
-            usd 
+            usd,
+            call_sid,
+            call_status
         }                    = req.body;
         let wallet           = await Wallet.findOne({ uuid });
         if (!wallet) {
             return responseHandler(res, NotFound, "Wallet not found!");
+        }
+        if (call_sid && (call_status && call_status == "in-progress")) {
+            await twilioClient.calls(call_sid).update({ status: 'completed' });
         }
         startTime            = new Date(startTime);
         endTime              = new Date(endTime);
