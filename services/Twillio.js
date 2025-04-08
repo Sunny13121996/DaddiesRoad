@@ -92,9 +92,9 @@ Twillio.callEnd          = async (req, res) => {
         if (call_status == "in-progress") {
             try {
                 await twilioClient.calls(CallSid).update({ status: 'completed' });
-                responseHandler(res, OK, `Call ${call_sid} force-ended after 45 seconds in-progress.`);
+                responseHandler(res, OK, `Call ${call_sid} end successfully.`);
             } catch (err) {
-                responseHandler(res, ServerError, err.message);
+                responseHandler(res, Unauthorized, err.message);
             }
         }
     } catch (error) {
@@ -122,7 +122,7 @@ Twillio.deductedFromWallet  = async (req, res) => {
         const minutes        = Math.ceil((duration % 3600) / 60);
         const seconds        = minutes * 60;
         // const totalChargeINR = Math.abs(price * usd); // It was calculating as per dynamic cut offs.
-        const totalChargeINR = 5; // Per Call For 45 Seconds
+        const totalChargeINR = parseInt(process.env.CALL_PER_AMOUNT); // Per Call For 45 Seconds
         if (wallet.balance >= totalChargeINR) {
             wallet.balance -= totalChargeINR;
             await wallet.save();
