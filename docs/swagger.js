@@ -1,4 +1,5 @@
-const options = {
+const endPoint = "carmittar.com/api";
+const options  = {
   openapi: "OpenAPI 3",
   language: "en-US",
   disableLogs: false,
@@ -20,7 +21,7 @@ const swaggerDocument = {
       email: "ss691601@gmail.com",
     },
   },
-  host: "daddiesroad.onrender.com/api",
+  host: endPoint,
   // host: "localhost:7001/api",
   basePath: "/",
   schemes: ["https"],

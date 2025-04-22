@@ -44,13 +44,13 @@ Twillio.inBoundCall = async (req, res) => {
             return responseHandler(res, NotFound, "This vehicle is not associated with us!");
         }
 
-        let wallet          = await Wallet.findOne({ uuid });
-        if (!wallet || Math.floor(wallet.balance) <= 0) {
-            // const twiml = new twilio.twiml.VoiceResponse();
-            // twiml.say("You do not have enough balance to make this call.");
-            // return res.type("text/xml").send(twiml.toString());
-            responseHandler(res, NotAcceptable, `You do not have enough balance to make this call.`);
-        }
+        // let wallet      = await Wallet.findOne({ uuid });
+        // if (!wallet || Math.floor(wallet.balance) <= 0) {
+        //     const twiml = new twilio.twiml.VoiceResponse();
+        //     twiml.say("You do not have enough balance to make this call.");
+        //     return res.type("text/xml").send(twiml.toString());
+        //     responseHandler(res, NotAcceptable, `You do not have enough balance to make this call.`);
+        // }
 
         const toPhone      = "+91"+user.phone_no;
         const userName     = user.name;
