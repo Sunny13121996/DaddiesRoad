@@ -28,7 +28,7 @@ Auth.login = async (req, res) => {
       const verifyPwd = await passwordHandler.comparePwd(password, user.password);
       if (verifyPwd) {
         const accessToken = jwt.sign({ phone_no }, process.env.JWT_ACCESS_TOKEN, {
-          expiresIn: "10m"
+          expiresIn: "24h"
         });
         const refreshToken = jwt.sign({ phone_no }, process.env.JWT_REFRESH_TOKEN);
         user._doc.accessToken  = accessToken;
