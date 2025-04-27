@@ -38,6 +38,7 @@ Twillio.inBoundCall = async (req, res) => {
         let { vehical_no, uuid } = req.body;
         const twilioPhone  = process.env.TWILIO_PHONE_NUMBER; // Twilio Number
 
+        vehical_no         = vehical_no.toLowerCase();
         // Find user and wallet
         const user         = await User.findOne({ uuid, vehical_no });
         if (!user) {
