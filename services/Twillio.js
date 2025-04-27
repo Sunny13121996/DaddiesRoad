@@ -96,31 +96,42 @@ Twillio.deductedFromWallet  = async (req, res) => {
             price, 
             usd,
             call_sid,
-            call_status
+            call_status,
+            deducted_from
         }                    = req.body;
-        let wallet           = await Wallet.findOne({ uuid });
-        if (!wallet) {
-            return responseHandler(res, NotFound, "Wallet not found!");
-        }
-        if (call_sid && (call_status && call_status == "in-progress")) {
-            await twilioClient.calls(call_sid).update({ status: 'completed' });
-        }
+        
         startTime            = new Date(startTime);
         endTime              = new Date(endTime);
         duration             = Math.floor((endTime - startTime) / 1000);
         const minutes        = Math.ceil((duration % 3600) / 60);
         const seconds        = minutes * 60;
-        // const totalChargeINR = Math.abs(price * usd); // It was calculating as per dynamic cut offs.
-        const totalChargeINR = parseInt(process.env.CALL_PER_AMOUNT); // Per Call For 45 Seconds
-        if (wallet.balance >= totalChargeINR) {
-            wallet.balance -= totalChargeINR;
-            await wallet.save();
-            // `Call ended. Charged ${Math.floor(totalChargeINR)}rs for ${minutes} minutes.`
-            responseHandler(res, OK, `Call ended. Charged ${Math.floor(totalChargeINR)}rs for ${seconds} seconds.`, 
-                { remaining_balance: Math.floor(wallet.balance) }
-            );
+        const totalChargeINR = parseInt(process.env.CALL_PER_AMOUNT);
+
+        // For Making a runing Call End
+        if (call_sid && (call_status && call_status == "completed")) {
+            await twilioClient.calls(call_sid).update({ status: 'completed' });
+        }
+
+        if (deducted_from == "wallet") {
+            let wallet           = await Wallet.findOne({ uuid });
+            if (!wallet) {
+                return responseHandler(res, NotFound, "Wallet not found!");
+            }
+            if (wallet.balance >= totalChargeINR) {
+                wallet.balance -= totalChargeINR;
+                await wallet.save();
+                
+                responseHandler(res, OK, `Call ended. Charged ${Math.floor(totalChargeINR)}rs for ${seconds} seconds.`, 
+                    { remaining_balance: Math.floor(wallet.balance) }
+                );
+            } else {
+                responseHandler(res, NotAcceptable, `Not enough balance for the full duration.`, 
+                    { remaining_balance: Math.floor(wallet.balance) }
+                );
+            }
         } else {
-            responseHandler(res, NotAcceptable, `Not enough balance for the full duration.`, 
+            const totalChargeINR = parseInt(process.env.CALL_PER_AMOUNT);
+            responseHandler(res, OK, `Call ended. Charged ${Math.floor(totalChargeINR)}rs for ${seconds} seconds.`, 
                 { remaining_balance: Math.floor(wallet.balance) }
             );
         }

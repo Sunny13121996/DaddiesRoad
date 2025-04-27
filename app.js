@@ -9,6 +9,7 @@ const indexRouter  = require('./routes/index');
 const restRouter   = require('./routes/restRouter');
 const app          = express();
 const mongoose     = require('mongoose');
+const helmet       = require("helmet");
 
 //CONNECT TO DATBASE
 const uri = process.env.MONGO_URI;
@@ -25,6 +26,7 @@ database.once('connected', () => {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(helmet());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
