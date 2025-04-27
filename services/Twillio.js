@@ -77,9 +77,17 @@ Twillio.inBoundCall = async (req, res) => {
 Twillio.callStatus       = async (req, res) => {
     try {
         let { call_sid } = req.query;
-        const { sid, status, startTime, endTime, duration, price, priceUnit } = await twilioClient.calls(call_sid).fetch();
-        responseHandler(res, OK, 'Call initiated successfully.!', 
-            { sid, status, startTime, endTime, duration, price, priceUnit }
+        const callResponse = await twilioClient.calls(call_sid).fetch();
+        console.log(`callResponse==>>`, callResponse);
+        responseHandler(res, OK, 'Call initiated successfully.!', { 
+                sid: callResponse.sid, 
+                status: callResponse.status, 
+                startTime: callResponse.startTime, 
+                endTime: callResponse.endTime, 
+                duration: callResponse.duration, 
+                price: callResponse.price, 
+                priceUnit: callResponse.priceUnit
+            }
         );
     } catch (error) {
         return responseHandler(res, ServerError, error.message);
