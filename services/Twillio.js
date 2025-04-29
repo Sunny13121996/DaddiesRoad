@@ -149,7 +149,7 @@ Twillio.deductedFromWallet  = async (req, res) => {
         } else {
             const totalChargeINR = parseInt(process.env.CALL_PER_AMOUNT);
             responseHandler(res, OK, `Call ended. Charged ${Math.floor(totalChargeINR)}rs for ${seconds} seconds.`, 
-                { remaining_balance: Math.floor(wallet.balance) }
+                { remaining_balance: 0 }
             );
         }
     } catch (error) {
