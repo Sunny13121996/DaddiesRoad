@@ -56,17 +56,17 @@ Twillio.inBoundCall = async (req, res) => {
         const toPhone      = "+91"+user.phone_no;
         const userName     = user.name;
 
-        // Start the call
-        const call = await twilioClient.calls.create({
-            url: `https://daddiesroad.onrender.com/api/makeCall?phone=${toPhone}`,
-            to: toPhone,
-            from: twilioPhone,
-            // statusCallback: `https://daddiesroad.onrender.com/api/callStatus?uuid=${uuid}`,
-            statusCallbackEvent: ["completed"]
-        });
+        // // Start the call
+        // const call = await twilioClient.calls.create({
+        //     url: `https://daddiesroad.onrender.com/api/makeCall?phone=${toPhone}`,
+        //     to: toPhone,
+        //     from: twilioPhone,
+        //     // statusCallback: `https://daddiesroad.onrender.com/api/callStatus?uuid=${uuid}`,
+        //     statusCallbackEvent: ["completed"]
+        // });
 
         responseHandler(res, OK, 'Call initiated successfully.!', { 
-            call: call.sid,
+            // call: call.sid,
             toPhone: Twillio.maskPhoneNumber(toPhone),
             userName: userName
         });
