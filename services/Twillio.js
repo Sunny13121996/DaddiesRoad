@@ -21,74 +21,46 @@ Twillio.maskPhoneNumber   = (phone) => {
     return phone.replace(/(\d{2})\d{6}(\d{2})/, '$1XXXXXX$2');
 };
 
-Twillio.makeCall          = async (req, res) => {
+Twillio.voice             = async (req, res) => {
     try {
         const params      = req.query;
         const twiml       = new twilio.twiml.VoiceResponse();
-        twiml.say("Please wait while we connect your call.");
-        twiml.dial(params.phone);
-        res.type("text/xml").send(twiml.toString());
+        const dial        = twiml.dial({ callerId: process.env.TWILIO_PHONE_NUMBER });
+        dial.number(params.phone);
+        res.type('text/xml');
+        res.send(twiml.toString());
     } catch (error) {
         return responseHandler(res, ServerError, error.message);
     }
 };
 
-Twillio.inBoundCall = async (req, res) => {
-    try {
-        let { vehical_no, uuid } = req.body;
-        const twilioPhone  = process.env.TWILIO_PHONE_NUMBER; // Twilio Number
+Twillio.token              = (req, res) => {
+    const AccessToken = require('twilio').jwt.AccessToken;
+    const VoiceGrant = AccessToken.VoiceGrant;
 
-        // vehical_no         = vehical_no.toLowerCase();
-        // Find user and wallet
-        const user         = await User.findOne({ uuid, vehical_no });
-        if (!user) {
-            return responseHandler(res, NotFound, "This vehicle is not associated with us!");
-        }
+    const token = new AccessToken(
+        process.env.TWILIO_ACCOUNT_SID,
+        process.env.TWILIO_API_KEY,
+        process.env.TWILIO_API_SECRET,
+        { identity: 'SunnyUser' }
+    );
 
-        // let wallet      = await Wallet.findOne({ uuid });
-        // if (!wallet || Math.floor(wallet.balance) <= 0) {
-        //     const twiml = new twilio.twiml.VoiceResponse();
-        //     twiml.say("You do not have enough balance to make this call.");
-        //     return res.type("text/xml").send(twiml.toString());
-        //     responseHandler(res, NotAcceptable, `You do not have enough balance to make this call.`);
-        // }
+    const voiceGrant = new VoiceGrant({
+        outgoingApplicationSid: process.env.TWILIO_TWIML_APP_SID,
+        incomingAllow: false,
+    });
 
-        const toPhone      = "+91"+user.phone_no;
-        const userName     = user.name;
-
-        // // Start the call
-        // const call = await twilioClient.calls.create({
-        //     url: `https://daddiesroad.onrender.com/api/makeCall?phone=${toPhone}`,
-        //     to: toPhone,
-        //     from: twilioPhone,
-        //     // statusCallback: `https://daddiesroad.onrender.com/api/callStatus?uuid=${uuid}`,
-        //     statusCallbackEvent: ["completed"]
-        // });
-
-        responseHandler(res, OK, 'Call initiated successfully.!', { 
-            // call: call.sid,
-            toPhone: Twillio.maskPhoneNumber(toPhone),
-            userName: userName
-        });
-    } catch (error) {
-        return responseHandler(res, ServerError, error.message);
-    }
+    token.addGrant(voiceGrant);
+    const jwtToken = token.toJwt();
+    responseHandler(res, OK, 'Twillio Token Authorized.!', { 
+        token: jwtToken
+    });
 };
 
 Twillio.callStatus       = async (req, res) => {
     try {
         let { call_sid } = req.query;
-        // console.log(`req.query==>>`, req.query);
         const callResponse = await twilioClient.calls(call_sid).fetch();
-        // console.log(`callResponse==>>`, { 
-        //     sid: callResponse.sid, 
-        //     status: callResponse.status, 
-        //     startTime: callResponse.startTime, 
-        //     endTime: callResponse.endTime, 
-        //     duration: callResponse.duration, 
-        //     price: callResponse.price, 
-        //     priceUnit: callResponse.priceUnit
-        // });
         responseHandler(res, OK, 'Call initiated successfully.!', { 
             sid: callResponse.sid, 
             status: callResponse.status, 
