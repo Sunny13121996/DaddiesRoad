@@ -47,7 +47,8 @@ Twillio.inBoundCall        = async (req, res) => {
         const userName     = user.name;
         responseHandler(res, OK, 'Call initiated successfully.!', {
             toPhone: Twillio.maskPhoneNumber(toPhone),
-            userName: userName
+            userName: userName,
+            originalNo: toPhone
         });
     } catch (error) {
         console.log(`error===`, error)
