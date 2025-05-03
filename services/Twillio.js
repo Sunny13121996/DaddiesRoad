@@ -37,7 +37,9 @@ Twillio.voice             = async (req, res) => {
 Twillio.inBoundCall        = async (req, res) => {
     try {
         let { vehical_no, uuid } = req.body;
-        const user         = await User.findOne({ uuid, vehical_no });
+        vehical_no         = vehical_no.trim();
+        uuid               = uuid.trim();
+        const user         = await User.findOne({ uuid: uuid, vehical_no: vehical_no });
         if (!user) {
             return responseHandler(res, NotFound, "This vehicle is not associated with us!");
         }
@@ -48,6 +50,7 @@ Twillio.inBoundCall        = async (req, res) => {
             userName: userName
         });
     } catch (error) {
+        console.log(`error===`, error)
         return responseHandler(res, ServerError, error.message);
     }
 };
