@@ -34,6 +34,24 @@ Twillio.voice             = async (req, res) => {
     }
 };
 
+Twillio.inBoundCall        = async (req, res) => {
+    try {
+        let { vehical_no, uuid } = req.body;
+        const user         = await User.findOne({ uuid, vehical_no });
+        if (!user) {
+            return responseHandler(res, NotFound, "This vehicle is not associated with us!");
+        }
+        const toPhone      = "+91"+user.phone_no;
+        const userName     = user.name;
+        responseHandler(res, OK, 'Call initiated successfully.!', {
+            toPhone: Twillio.maskPhoneNumber(toPhone),
+            userName: userName
+        });
+    } catch (error) {
+        return responseHandler(res, ServerError, error.message);
+    }
+};
+
 Twillio.token              = (req, res) => {
     const AccessToken = require('twilio').jwt.AccessToken;
     const VoiceGrant = AccessToken.VoiceGrant;
