@@ -26,7 +26,7 @@ Twillio.voice             = async (req, res) => {
         const params      = req.query;
         const twiml       = new twilio.twiml.VoiceResponse();
         const dial        = twiml.dial({ callerId: process.env.TWILIO_PHONE_NUMBER });
-        dial.number(params.phone);
+        dial.number(params.To);
         res.type('text/xml');
         res.send(twiml.toString());
     } catch (error) {
