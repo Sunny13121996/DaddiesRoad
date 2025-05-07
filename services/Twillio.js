@@ -23,10 +23,10 @@ Twillio.maskPhoneNumber   = (phone) => {
 
 Twillio.voice             = async (req, res) => {
     try {
-        const params      = req.query;
+        const payload     = req.body;
         const twiml       = new twilio.twiml.VoiceResponse();
         const dial        = twiml.dial({ callerId: process.env.TWILIO_PHONE_NUMBER });
-        dial.number(params.To);
+        dial.number(payload.To);
         res.type('text/xml');
         res.send(twiml.toString());
     } catch (error) {
