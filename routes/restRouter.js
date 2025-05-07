@@ -35,7 +35,7 @@ router.post('/verifyPayment', isAuthenticated, Payments.verifyPayment);
 router.post('/notifications', isAuthenticated, Notifications.notifications);
 
 //Twillio Calls
-router.get('/voice', Twillio.voice);
+router.post('/voice', Twillio.voice);
 router.post('/inBoundCall', isAuthenticated, Twillio.inBoundCall);
 router.get('/token', isAuthenticated, Twillio.token);
 router.get('/callStatus',  isAuthenticated, Twillio.callStatus);
