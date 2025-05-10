@@ -23,7 +23,6 @@ Twillio.maskPhoneNumber = (phone) => {
 
 Twillio.voice = async (req, res) => {
     try {
-        console.log(`req===>>`, req)
         console.log(`req.body===>>`, req.body)
         const payload = req.body;
         const to = payload.To;
@@ -57,20 +56,19 @@ Twillio.inBoundCall = async (req, res) => {
             originalNo: toPhone
         });
     } catch (error) {
-        console.log(`error===`, error)
         return responseHandler(res, ServerError, error.message);
     }
 };
 
 Twillio.token = (req, res) => {
     const AccessToken = require('twilio').jwt.AccessToken;
-    const VoiceGrant = AccessToken.VoiceGrant;
+    const VoiceGrant  = AccessToken.VoiceGrant;
 
     const token = new AccessToken(
         process.env.TWILIO_ACCOUNT_SID,
         process.env.TWILIO_API_KEY,
         process.env.TWILIO_API_SECRET,
-        { identity: 'User' }
+        { identity: 'ParkingWithQr' }
     );
 
     const voiceGrant = new VoiceGrant({
