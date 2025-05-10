@@ -23,6 +23,8 @@ Twillio.maskPhoneNumber = (phone) => {
 
 Twillio.voice = async (req, res) => {
     try {
+        console.log(`req===>>`, req)
+        console.log(`req.body===>>`, req.body)
         const payload = req.body;
         const to = payload.To;
         if (!to) {
