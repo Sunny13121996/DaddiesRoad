@@ -70,12 +70,12 @@ Twillio.token = (req, res) => {
         process.env.TWILIO_ACCOUNT_SID,
         process.env.TWILIO_API_KEY,
         process.env.TWILIO_API_SECRET,
-        { identity: 'SunnyUser' }
+        { identity: 'User' }
     );
 
     const voiceGrant = new VoiceGrant({
         outgoingApplicationSid: process.env.TWILIO_TWIML_APP_SID,
-        incomingAllow: false,
+        incomingAllow: true
     });
 
     token.addGrant(voiceGrant);
