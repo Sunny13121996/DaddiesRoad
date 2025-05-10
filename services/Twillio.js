@@ -64,13 +64,6 @@ Twillio.token = (req, res) => {
     const AccessToken = require('twilio').jwt.AccessToken;
     const VoiceGrant  = AccessToken.VoiceGrant;
 
-    console.log({
-        TWILIO_ACCOUNT_SID: process.env.TWILIO_ACCOUNT_SID,
-        TWILIO_API_KEY: process.env.TWILIO_API_KEY,
-        TWILIO_API_SECRET: process.env.TWILIO_API_SECRET,
-        TWILIO_TWIML_APP_SID: process.env.TWILIO_TWIML_APP_SID
-    })
-    
     const token = new AccessToken(
         process.env.TWILIO_ACCOUNT_SID,
         process.env.TWILIO_API_KEY,
@@ -80,7 +73,7 @@ Twillio.token = (req, res) => {
 
     const voiceGrant = new VoiceGrant({
         outgoingApplicationSid: process.env.TWILIO_TWIML_APP_SID,
-        incomingAllow: true
+        incomingAllow: false
     });
 
     token.addGrant(voiceGrant);
