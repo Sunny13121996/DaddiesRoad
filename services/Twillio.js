@@ -4,7 +4,7 @@ const { responseHandler, passwordHandler } = require("../helper/helper");
 const Twillio = {};
 const { User } = require("../models/User");
 const { Wallet } = require("../models/Wallet");
-const { CallSchema }    = require('./models/Call');
+const { CallSchema }    = require('../models/Call');
 const twilio = require("twilio");
 const {
     OK,
