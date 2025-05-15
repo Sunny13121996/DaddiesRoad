@@ -4,6 +4,7 @@ const { responseHandler, passwordHandler } = require("../helper/helper");
 const Twillio = {};
 const { User } = require("../models/User");
 const { Wallet } = require("../models/Wallet");
+const { CallSchema }    = require('./models/Call');
 const twilio = require("twilio");
 const {
     OK,
@@ -39,6 +40,38 @@ Twillio.voice = async (req, res) => {
     }
 };
 
+Twillio.callFallback = async (req, res) => {
+    try {
+        const twiml = new twilio.twiml.VoiceResponse();
+        twiml.say('Sorry! We are unable to make a call');
+        res.type('text/xml');
+        res.send(twiml.toString());
+    } catch (error) {
+        return responseHandler(res, ServerError, error.message);
+    }
+};
+
+Twillio.callBackStatus = async (req, res) => {
+    try {
+        const { CallSid, CallStatus, From, To } = req.body;
+        console.log('📞 Call Status Update:', req.body)
+        console.log('📞 Call Status Update:', {
+            CallSid,
+            CallStatus,
+            From,
+            To
+        });
+        await CallSchema.findOneAndUpdate(
+            { callSid: CallSid },
+            { status: CallStatus, from: From, to: To, updatedAt: new Date() },
+            { upsert: true }
+        );
+        res.sendStatus(200);
+    } catch (error) {
+        return responseHandler(res, ServerError, error.message);
+    }
+};
+
 Twillio.inBoundCall = async (req, res) => {
     try {
         let { vehical_no, uuid } = req.body;
@@ -63,19 +96,16 @@ Twillio.inBoundCall = async (req, res) => {
 Twillio.token = (req, res) => {
     const AccessToken = require('twilio').jwt.AccessToken;
     const VoiceGrant  = AccessToken.VoiceGrant;
-
-    const token = new AccessToken(
+    const token       = new AccessToken(
         process.env.TWILIO_ACCOUNT_SID,
         process.env.TWILIO_API_KEY,
         process.env.TWILIO_API_SECRET,
         { identity: 'ParkingWithQr' }
     );
-
     const voiceGrant = new VoiceGrant({
         outgoingApplicationSid: process.env.TWILIO_TWIML_APP_SID,
-        incomingAllow: false
+        // incomingAllow: false
     });
-
     token.addGrant(voiceGrant);
     const jwtToken = token.toJwt();
     responseHandler(res, OK, 'Twillio Token Authorized.!', {
@@ -86,15 +116,28 @@ Twillio.token = (req, res) => {
 Twillio.callStatus = async (req, res) => {
     try {
         let { call_sid } = req.query;
-        const callResponse = await twilioClient.calls(call_sid).fetch();
+        // const callResponse = await twilioClient.calls(call_sid).fetch();
+        const callResponse = await Call.findOneAndUpdate(
+            { callSid: call_sid },
+            {
+                status: CallStatus,
+                from: From,
+                to: To,
+                direction: Direction,
+                duration: Duration,
+                answeredBy: AnsweredBy,
+                updatedAt: new Date()
+            },
+            { upsert: true }
+        );
         responseHandler(res, OK, 'Call initiated successfully.!', {
-            sid: callResponse.sid,
+            sid: callResponse.callSid,
             status: callResponse.status,
-            startTime: callResponse.startTime,
-            endTime: callResponse.endTime,
+            startTime: callResponse.startTime || new Date(),
+            endTime: callResponse.endTime || new Date(),
             duration: callResponse.duration,
-            price: callResponse.price,
-            priceUnit: callResponse.priceUnit
+            price: callResponse.price || 0,
+            priceUnit: callResponse.priceUnit || 0
         });
     } catch (error) {
         return responseHandler(res, ServerError, error.message);
