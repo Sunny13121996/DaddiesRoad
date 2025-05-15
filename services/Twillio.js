@@ -116,29 +116,38 @@ Twillio.token = (req, res) => {
 Twillio.callStatus = async (req, res) => {
     try {
         let { call_sid } = req.query;
-        // const callResponse = await twilioClient.calls(call_sid).fetch();
-        const callResponse = await Call.findOneAndUpdate(
-            { callSid: call_sid },
-            {
-                status: CallStatus,
-                from: From,
-                to: To,
-                direction: Direction,
-                duration: Duration,
-                answeredBy: AnsweredBy,
-                updatedAt: new Date()
-            },
-            { upsert: true }
-        );
+        const callResponse = await twilioClient.calls(call_sid).fetch();
+        // const callResponse = await Call.findOneAndUpdate(
+        //     { callSid: call_sid },
+        //     {
+        //         status: CallStatus,
+        //         from: From,
+        //         to: To,
+        //         direction: Direction,
+        //         duration: Duration,
+        //         answeredBy: AnsweredBy,
+        //         updatedAt: new Date()
+        //     },
+        //     { upsert: true }
+        // );
         responseHandler(res, OK, 'Call initiated successfully.!', {
-            sid: callResponse.callSid,
+            sid: callResponse.sid,
             status: callResponse.status,
-            startTime: callResponse.startTime || new Date(),
-            endTime: callResponse.endTime || new Date(),
+            startTime: callResponse.startTime,
+            endTime: callResponse.endTime,
             duration: callResponse.duration,
-            price: callResponse.price || 0,
-            priceUnit: callResponse.priceUnit || 0
+            price: callResponse.price,
+            priceUnit: callResponse.priceUnit
         });
+        // responseHandler(res, OK, 'Call initiated successfully.!', {
+        //     sid: callResponse.callSid,
+        //     status: callResponse.status,
+        //     startTime: callResponse.startTime || new Date(),
+        //     endTime: callResponse.endTime || new Date(),
+        //     duration: callResponse.duration,
+        //     price: callResponse.price || 0,
+        //     priceUnit: callResponse.priceUnit || 0
+        // });
     } catch (error) {
         return responseHandler(res, ServerError, error.message);
     }
