@@ -93,6 +93,22 @@ Twillio.inBoundCall = async (req, res) => {
     }
 };
 
+Twillio.sendMessage = async (req, res) => {
+    try {
+        const { to, body } = req.body;
+        const message = await client.messages.create({
+            body,
+            from: process.env.TWILIO_PHONE_NUMBER,
+            to,
+        });
+        responseHandler(res, OK, 'Message send successfully.!', {
+            message_sid: message.sid
+        });
+    } catch (error) {
+        return responseHandler(res, ServerError, error.message);
+    }
+};
+
 Twillio.token = (req, res) => {
     const AccessToken = require('twilio').jwt.AccessToken;
     const VoiceGrant  = AccessToken.VoiceGrant;

@@ -39,6 +39,7 @@ router.post('/voice', Twillio.voice);
 router.post('/callFallBack', Twillio.callFallback);
 router.post('/callBackStatus', Twillio.callBackStatus);
 router.post('/inBoundCall', isAuthenticated, Twillio.inBoundCall);
+router.post('/sendMessage', isAuthenticated, Twillio.sendMessage);
 router.get('/token', isAuthenticated, Twillio.token);
 router.get('/callStatus',  isAuthenticated, Twillio.callStatus);
 router.post('/deductedFromWallet',  isAuthenticated, Twillio.deductedFromWallet);
