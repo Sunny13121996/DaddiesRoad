@@ -1,47 +1,50 @@
 require('dotenv').config();
 
-const { responseHandler, paginate }   = require("../helper/helper");
-const Notification          = {};
+const { responseHandler, passwordHandler } = require("../helper/helper");
+const {Notification}       = require('../models/Notification');
 const {
     OK,
-    ServerError
-}                                   = require("../config/statusCodes");
+    ServerError,
+}                          = require("../config/statusCodes");
 
-Notification.notifications          = async (req, res) => {
-    try {
-        const getTotalNotifications = (notificationsValues) => {
-            return new Promise((resolve, rejects) => {
-                connection.query(`SELECT notifications_id, type, title, message, to_id, is_read FROM notifications WHERE is_read = 0 AND to_user = ?`, notificationsValues, (err, success)=>{
-                    (err)? rejects(err): resolve(success.length);
-                });
-            })
-        };
-        let notificationsQuery   = {};
-        let notificationsValues  = {};
-        const post               = req.body;
-        const response           = {};
-        if (post.action == "get_notification") {
-            notificationsQuery   = `SELECT notifications_id, type, title, message, to_id, is_read, created FROM notifications WHERE to_user = ? AND is_delete = 0 ORDER BY created DESC LIMIT ${paginate(req.body.page)}`;
-            notificationsValues  = [post.user_id];
-            response.total       = await getTotalNotifications(notificationsValues);
-        } else if (post.action == "mark_read") {
-            notificationsQuery   = `UPDATE notifications SET is_read = 1 WHERE to_user = ?`;
-            notificationsValues  = [post.user_id];
-        } else {
-            notificationsQuery   = `UPDATE notifications SET is_delete = 1 WHERE notifications_id = ?`;
-            notificationsValues  = [post.notification_id];
-        }
-        connection.query(notificationsQuery, notificationsValues, (notificationsError, notificationsRows) => {
-            if (notificationsError) {
-                responseHandler(res, ServerError, notificationsError.message);
-            } else {
-                response.data    = notificationsRows;
-                responseHandler(res, OK, `Notifications`, response);
-            }
-        });
-    } catch (error) {
-        responseHandler(res, ServerError, error.message);
+Notification.notifications = async (req, res) => {
+  try {
+    const post             = req.body;
+    const userId           = post.user_id;
+    const response         = {};
+    const getTotalNotifications = async (userId) => {
+      const count          = await Notification.countDocuments({ uuid: userId, is_read: false });
+      return count;
+    };
+    // Action: Get notifications
+    if (post.action === "get_notification") {
+      const notifications = await Notification.find({ uuid: userId, is_delete: { $ne: true } }).sort({ notifyDate: -1 }).lean();
+      response.data  = notifications;
+      response.total = await getTotalNotifications(userId);
+      return responseHandler(res, OK, `Notifications`, response);
     }
-}
+    // Action: Mark all notifications as read
+    else if (post.action === "mark_read") {
+      const result = await Notification.updateMany(
+        { uuid: userId, is_read: false },
+        { $set: { is_read: true } }
+      );
+      response.data = result;
+      return responseHandler(res, OK, `Notifications marked as read`, response);
+    }
+    // Action: Delete single notification
+    else {
+      const notificationId = post.notification_id;
+      const result = await Notification.updateOne(
+        { _id: notificationId },
+        { $set: { is_delete: true } }
+      );
+      response.data = result;
+      return responseHandler(res, OK, `Notification deleted`, response);
+    }
+  } catch (error) {
+    return responseHandler(res, ServerError, error.message);
+  }
+};
 
 module.exports              = Notification;

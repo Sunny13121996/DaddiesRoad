@@ -4,6 +4,8 @@ const { responseHandler, passwordHandler } = require("../helper/helper");
 const {User}              = require("../models/User");
 const {Wallet}            = require("../models/Wallet");
 const {Payments}          = require("../models/Payments");
+const {Documents}         = require("../models/Documents");
+const {Notification}      = require('../models/Notification');
 const Auth                = {};
 const jwtKey              = process.env.JWT_TOKEN;
 const jwtAccessKey        = process.env.JWT_ACCESS_TOKEN;
@@ -94,6 +96,52 @@ Auth.refreshToken      = (req, res) => {
     responseHandler(res, OK, `New Access Token!`, { accessToken: accessToken });
 };
 
+Auth.checkExpirationOfDocs = async (uuid) => {
+  try {
+    const today = new Date();
+    const types = ['driving', 'insurance', 'puc', 'rc'];
+    for (const type of types) {
+      const doc = await Documents.findOne({ uuid, type });
+      if (doc && doc.vaild_till) {
+        const expiryDate = new Date(doc.vaild_till);
+        const timeDiff   = expiryDate - today;
+        const daysLeft   = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+        // Only for documents expiring in next 15 days (but not expired or today)
+        if (daysLeft > 0 && daysLeft <= 15) {
+          // Optional: Update status if needed
+          await Documents.updateOne({ _id: doc._id }, { $set: { status: 1 } });
+          // Check if notification for this day already exists
+          const alreadyNotified = await Notification.findOne({
+            uuid,
+            docType: type,
+            daysLeft,
+            expiryDate
+          });
+          if (!alreadyNotified) {
+            const message = `Your ${type} document '${doc.name}' will expire in ${daysLeft} day(s).`;
+            await Notification.create({
+              uuid,
+              docType: type,
+              message,
+              expiryDate,
+              daysLeft,
+            });
+            console.log(`Notification created for ${type}: ${message}`);
+          } else {
+            console.log(`Notification already sent for ${type} ${daysLeft} days before expiry.`);
+          }
+        } else {
+          console.log(`No notification needed for ${type}, daysLeft: ${daysLeft}`);
+        }
+      } else {
+        console.log(`No ${type} document found for user ${uuid}`);
+      }
+    }
+  } catch (error) {
+    console.error("Error checking/creating notifications:", error);
+  }
+};
+
 Auth.updateConfig = async (req, res) => {
     try {
       const { device_type, device_token, uuid } = req.body;
@@ -108,8 +156,13 @@ Auth.updateConfig = async (req, res) => {
       let wallet     = await Wallet.findOne({ uuid });
       wallet         = (wallet)? wallet : 0;
       wallet.balance = (wallet.balance)? Math.floor(wallet.balance) : 0;
+      let docs       = await Documents.find({ uuid });
+      if (docs && docs.length > 0) {
+        await Auth.checkExpirationOfDocs(uuid);
+      }
       responseHandler(res, OK, 'Configuration updated successfully!', { 
-        amount: wallet 
+        amount: wallet,
+        docs: docs
       });
     } catch (error) {
       responseHandler(res, ServerError, error.message);
