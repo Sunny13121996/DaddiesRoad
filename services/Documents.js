@@ -31,13 +31,15 @@ Document.createDocuements = async (req, res) => {
             return responseHandler(res, ServerError, "Document type is required");
         }
         const docData  = { name, number, vaild_till, type, uuid };
-        if ('front' in req.files) {
-            storage(req.files.front, type, 'front', uuid);
-            docData.front = await getFileName(req.files.front, type, 'front', uuid);
-        }
-        if ('back' in req.files) {
-            storage(req.files.back, type, 'back', uuid);
-            docData.back  = await getFileName(req.files.back, type, 'back', uuid);
+        if (req.files) {
+            if ('front' in req.files) {
+                storage(req.files.front, type, 'front', uuid);
+                docData.front = await getFileName(req.files.front, type, 'front', uuid);
+            }
+            if ('back' in req.files) {
+                storage(req.files.back, type, 'back', uuid);
+                docData.back  = await getFileName(req.files.back, type, 'back', uuid);
+            }
         }
         let result     = "";
         docData.status = 0;
@@ -63,6 +65,13 @@ Document.createDocuements = async (req, res) => {
                 result     = await docs.save();
             }
         } else if (type === "insurance") {
+            if ('id' in  req.body) {
+                result = await Documents.findByIdAndUpdate(id, docData, { new: true });
+            } else {
+                const docs = new Documents(docData);
+                result     = await docs.save();
+            }
+        } else if (type === "service") {
             if ('id' in  req.body) {
                 result = await Documents.findByIdAndUpdate(id, docData, { new: true });
             } else {

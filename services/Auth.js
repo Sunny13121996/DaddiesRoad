@@ -99,7 +99,7 @@ Auth.refreshToken      = (req, res) => {
 Auth.checkExpirationOfDocs = async (uuid) => {
   try {
     const today = new Date();
-    const types = ['driving', 'insurance', 'puc', 'rc'];
+    const types = ['driving', 'insurance', 'puc', 'rc','service'];
     for (const type of types) {
       const doc = await Documents.findOne({ uuid, type });
       if (doc && doc.vaild_till) {
