@@ -25,12 +25,12 @@ Document.createDocuements = async (req, res) => {
         console.log(`docData====>>>`, docData);
         if (req.files) {
             if ('front' in req.files) {
-                storage(req.files.front, docData.type, 'front', uuid);
-                docData.front = await getFileName(req.files.front, docData.type, 'front', uuid);
+                storage(req.files.front, docData.type, 'front', docData.uuid);
+                docData.front = await getFileName(req.files.front, docData.type, 'front', docData.uuid);
             }
             if ('back' in req.files) {
-                storage(req.files.back, docData.type, 'back', uuid);
-                docData.back  = await getFileName(req.files.back, docData.type, 'back', uuid);
+                storage(req.files.back, docData.type, 'back', docData.uuid);
+                docData.back  = await getFileName(req.files.back, docData.type, 'back', docData.uuid);
             }
         }
         let result     = "";
