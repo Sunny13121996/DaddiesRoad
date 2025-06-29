@@ -17,23 +17,12 @@ const {
 
 Document.createDocuements = async (req, res) => {
     try {
-        const { 
-            name, 
-            number, 
-            vaild_from,
-            vaild_till,
-            front, 
-            back, 
-            type,
-            uuid,
-            id 
-        }                 = req.body;
+        let docData       = req.body;
         if (!type) {
             return responseHandler(res, ServerError, "Document type is required");
         }
-        console.log(`req,body====>>>`,req.body);
-        const docData  = { name, number, vaild_till, vaild_from, type, uuid };
-        console.log(`docData====>>>`,docData);
+        console.log(`req.body====>>>`, req.body);
+        console.log(`docData====>>>`, docData);
         if (req.files) {
             if ('front' in req.files) {
                 storage(req.files.front, type, 'front', uuid);
