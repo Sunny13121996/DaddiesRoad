@@ -18,52 +18,52 @@ const {
 Document.createDocuements = async (req, res) => {
     try {
         let docData       = req.body;
-        if (!type) {
+        if (!docData.type) {
             return responseHandler(res, ServerError, "Document type is required");
         }
         console.log(`req.body====>>>`, req.body);
         console.log(`docData====>>>`, docData);
         if (req.files) {
             if ('front' in req.files) {
-                storage(req.files.front, type, 'front', uuid);
-                docData.front = await getFileName(req.files.front, type, 'front', uuid);
+                storage(req.files.front, docData.type, 'front', uuid);
+                docData.front = await getFileName(req.files.front, docData.type, 'front', uuid);
             }
             if ('back' in req.files) {
-                storage(req.files.back, type, 'back', uuid);
-                docData.back  = await getFileName(req.files.back, type, 'back', uuid);
+                storage(req.files.back, docData.type, 'back', uuid);
+                docData.back  = await getFileName(req.files.back, docData.type, 'back', uuid);
             }
         }
         let result     = "";
         docData.status = 0;
-        if (type === "driving") {
+        if (docData.type === "driving") {
             if ('id' in  req.body) {
                 result = await Documents.findByIdAndUpdate(id, docData, { new: true });
             } else {
                 const docs = new Documents(docData);
                 result     = await docs.save();
             }
-        } else if (type === "rc") {
+        } else if (docData.type === "rc") {
             if ('id' in  req.body) {
                 result = await Documents.findByIdAndUpdate(id, docData, { new: true });
             } else {
                 const docs = new Documents(docData);
                 result     = await docs.save();
             }
-        } else if (type === "puc") {
+        } else if (docData.type === "puc") {
             if ('id' in  req.body) {
                 result = await Documents.findByIdAndUpdate(id, docData, { new: true });
             } else {
                 const docs = new Documents(docData);
                 result     = await docs.save();
             }
-        } else if (type === "insurance") {
+        } else if (docData.type === "insurance") {
             if ('id' in  req.body) {
                 result = await Documents.findByIdAndUpdate(id, docData, { new: true });
             } else {
                 const docs = new Documents(docData);
                 result     = await docs.save();
             }
-        } else if (type === "service") {
+        } else if (docData.type === "service") {
             if ('id' in  req.body) {
                 result = await Documents.findByIdAndUpdate(id, docData, { new: true });
             } else {
