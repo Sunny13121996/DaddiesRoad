@@ -21,7 +21,6 @@ Document.createDocuements = async (req, res) => {
         if (!docData.type) {
             return responseHandler(res, ServerError, "Document type is required");
         }
-        console.log(`req.body====>>>`, req.body);
         console.log(`docData====>>>`, docData);
         if (req.files) {
             if ('front' in req.files) {
